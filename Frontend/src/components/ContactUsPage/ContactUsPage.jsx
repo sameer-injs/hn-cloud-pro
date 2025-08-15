@@ -42,8 +42,8 @@ const ContactUsPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    // let url = `${APP_URL}api/user/enq`;
-    let url = `${process.env.API_URL}api/user/enq`;
+    let url = `${APP_URL}api/user/enq`;
+    // let url = `${process.env.API_URL}api/user/enq`;
   try {
     
     const resp = await axios.post(url, formData);
@@ -60,7 +60,6 @@ const ContactUsPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
-console.log("formData:- ", formData)
   return (
     <div className={styles.containerStyle}>
       {toast.visible && (
