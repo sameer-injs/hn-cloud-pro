@@ -42,7 +42,8 @@ const ContactUsPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    let url = `${APP_URL}api/user/enq`;
+    // let url = `${APP_URL}api/user/enq`;
+    let url = `${process.env.API_URL}api/user/enq`;
   try {
     
     const resp = await axios.post(url, formData);
