@@ -108,8 +108,8 @@ app.post("/api/user/enq", async(request, response) => {
       host: "smtp.gmail.com",
       port: 465,
       auth: {
-        user: "hncloudpro@gmail.com",
-        pass: "jbrwerlyndaueugu",
+        user: process.env._USER,
+        pass: process.env._PASS,
       },
       tls: {
         rejectUnauthorized: false, // bypass cert check
@@ -118,30 +118,23 @@ app.post("/api/user/enq", async(request, response) => {
 
     const sendMail = async (to, obj) => {
       const info = await transporter.sendMail({
-        from: "hncloudpro@gmail.com",
-        to,
+        from: process.env._USER,
+        to:process.env._USER,
         subject: obj?.subject,
         html: textTable(obj),
       });
     };
     try {
       
-      await sendMail(email, request?.body);
-      response.send({status: "success",
-        message:"email sent!"
-      })
+     const _data = await sendMail(email, request?.body);
+      response.send({status: "success",message:"email sent!"})
     } catch (error) {
-      response.send({status: "request failed!",
-        message:error.message
-      })
-      
+      response.send({status: "request failed!",message:error.message})
     }
   } catch (error) {
     console.log("error:- ", error);
   }
-  response.send({
-    req: "success",
-  });
+
 });
 
 app.listen(PORT, () => {
