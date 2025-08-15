@@ -108,8 +108,8 @@ app.post("/api/user/enq", async(request, response) => {
       host: "smtp.gmail.com",
       port: 465,
       auth: {
-        user: "from_user",
-        pass: "app_password",
+        user: "hncloudpro@gmail.com",
+        pass: "jbrwerlyndaueugu",
       },
       tls: {
         rejectUnauthorized: false, // bypass cert check
@@ -118,9 +118,9 @@ app.post("/api/user/enq", async(request, response) => {
 
     const sendMail = async (to, obj) => {
       const info = await transporter.sendMail({
-        from: "from_user",
+        from: "hncloudpro@gmail.com",
         to,
-        subject: "test node js.",
+        subject: obj?.subject,
         html: textTable(obj),
       });
     };
