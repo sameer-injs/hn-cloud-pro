@@ -8,10 +8,11 @@ import {
   Send,
   CheckCircle,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { contactPageStyles as styles } from "../../assets/dummystyles";
 import axios from "axios";
-import { APP_URL } from "../../apis/config";
+// import { APP_URL } from "../../apis/config";
 
 const ContactUsPage = () => {
   const [formData, setFormData] = useState({
@@ -42,17 +43,20 @@ const ContactUsPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    let url = `${APP_URL}api/user/enq`;
-    // let url = `${process.env.API_URL}api/user/enq`;
-  try {
-    
-    const resp = await axios.post(url, formData);
-  } catch (error) {
-    console.log("error:- ", error)
-  }
-
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-    setErrors({});
+    setIsSubmitting(true);
+    let url = `${import.meta.env.VITE_API_URL}api/user/enq`;
+    try {
+      const resp = await axios.post(url, formData);
+      setToast({ visible: true, message: "Message sent successfully!", type: "success" });
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setErrors({});
+    } catch (error) {
+      console.log("error:- ", error);
+      setToast({ visible: true, message: "Failed to send message. Please try again.", type: "error" });
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setToast({ visible: false, message: "", type: "info" }), 3000);
+    }
   };
 
   const handleChange = (e) => {
@@ -202,8 +206,12 @@ const ContactUsPage = () => {
                 className={styles.submitButtonStyle}
               >
                 <div className={styles.sendIconWrapperStyle}>
-                  <Send className="w-5 h-5 mr-2" />
-                  Send
+                  {isSubmitting ? (
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5 mr-2" />
+                  )}
+                  {isSubmitting ? "Sending..." : "Send"}
                 </div>
               </button>
             </form>

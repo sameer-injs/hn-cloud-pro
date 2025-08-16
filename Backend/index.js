@@ -59,43 +59,113 @@ app.get("/", (req, resp) => {
 });
 
 
-app.post("/api/user/enq", async(request, response) => {
+// app.post("/api/user/enq", async (request, response) => {
+//   const { name, email, phone, subject, message } = request?.body || {};
+
+//   try {
+//     const transporter = nodemailer.createTransport({
+//       secure: true,
+//       host: "smtp.gmail.com",
+//       port: 465,
+//       auth: {
+//         user: process.env.SENDER_EMAIL,
+//         pass: process.env.SENDER_PASSKEY,
+//       },
+//       tls: {
+//         rejectUnauthorized: false, // ⚠️ Only for testing, remove in prod
+//       },
+//     });
+
+//     // Reusable function to send email
+//     const sendMail = async (to, subject, html) => {
+//       return await transporter.sendMail({
+//         from: process.env.SENDER_EMAIL,
+//         to,
+//         subject,
+//         html,
+//       });
+//     };
+
+//     try {
+//       // 1 Send enquiry email to Receiver (you)
+//       await sendMail(
+//         process.env.RECIEVER_EMAIL,
+//         subject || "New Contact Form Submission",
+//         textTable({ name, email, phone, subject, message })
+//       );
+
+//       // 2 Send confirmation email to User
+//       // await sendMail(
+//       //   email,
+//       //   "We received your enquiry",
+//       //   `<p>Hi ${name || "there"},</p>
+//       //    <p>Thank you for reaching out. We have received your message and will get back to you shortly.</p>
+//       //    <br/>
+//       //    <p>Best regards,<br/>Support Team</p>`
+//       // );
+
+//       response.send({ status: "success", message: "Email sent to both receiver and user!" });
+//     } catch (error) {
+//       response.status(500).send({ status: "request failed!", message: error.message });
+//     }
+//   } catch (error) {
+//     console.log("error:- ", error);
+//     response.status(500).send({ status: "server error", message: error.message });
+//   }
+// });
+
+app.post("/api/user/enq", async (request, response) => {
   const { name, email, phone, subject, message } = request?.body || {};
 
   try {
     const transporter = nodemailer.createTransport({
-      secure: true,
       host: "smtp.gmail.com",
       port: 465,
+      secure: true, // use SSL
       auth: {
         user: process.env.SENDER_EMAIL,
         pass: process.env.SENDER_PASSKEY,
       },
-      tls: {
-        rejectUnauthorized: false, // bypass cert check
-      },
     });
 
-    const sendMail = async (to, obj) => {
-      const info = await transporter.sendMail({
-        from: process.env.SENDER_EMAIL,
-        to:process.env.RECIEVER_EMAIL,
-        subject: obj?.subject,
-        html: textTable(obj),
+    // Reusable function to send email
+    const sendMail = async (to, subject, html) => {
+      return await transporter.sendMail({
+        from: `"New Equiry" <${process.env.SENDER_EMAIL}>`, // friendly "from" name
+        to,
+        subject,
+        html,
       });
     };
+
     try {
-      
-     const _data = await sendMail(email, request?.body);
-      response.send({status: "success",message:"email sent!"})
+      // 1 Send enquiry email to Receiver (you/admin)
+      await sendMail(
+        process.env.RECIEVER_EMAIL,
+        subject || "New Contact Form Submission",
+        textTable({ name, email, phone, subject, message })
+      );
+
+      // 2 Send confirmation email to User
+      // await sendMail(
+      //   email,
+      //   "We received your enquiry ✔",
+      //   `<p>Hi ${name || "there"},</p>
+      //    <p>Thank you for reaching out! We’ve received your enquiry and will get back to you shortly.</p>
+      //    <br/>
+      //    <p>Best regards,<br/>Support Team</p>`
+      // );
+
+      response.send({ status: "success", message: "Email sent to receiver and confirmation sent to user!" });
     } catch (error) {
-      response.send({status: "request failed!",message:error.message})
+      response.status(500).send({ status: "request failed", message: error.message });
     }
   } catch (error) {
     console.log("error:- ", error);
+    response.status(500).send({ status: "server error", message: error.message });
   }
-
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
