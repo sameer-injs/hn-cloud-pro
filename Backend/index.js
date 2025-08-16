@@ -68,8 +68,8 @@ app.post("/api/user/enq", async(request, response) => {
       host: "smtp.gmail.com",
       port: 465,
       auth: {
-        user: process.env._USER,
-        pass: process.env._PASS,
+        user: process.env.SENDER_EMAIL,
+        pass: process.env.SENDER_PASSKEY,
       },
       tls: {
         rejectUnauthorized: false, // bypass cert check
@@ -78,8 +78,8 @@ app.post("/api/user/enq", async(request, response) => {
 
     const sendMail = async (to, obj) => {
       const info = await transporter.sendMail({
-        from: process.env._USER,
-        to:"contact@hncloudpro.com",
+        from: process.env.SENDER_EMAIL,
+        to:process.env.RECIEVER_EMAIL,
         subject: obj?.subject,
         html: textTable(obj),
       });
